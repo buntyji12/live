@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>India vs Pakistan — Live Stream</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
+  <style>
+    body{margin:0;font-family:Arial;background:#000;color:#fff;text-align:center;}
+    .player{max-width:800px;margin:20px auto;}
+    video{width:100%;height:auto;background:#000;}
+    .loading{
+      position:absolute;top:0;left:0;right:0;bottom:0;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:rgba(0,0,0,0.8);color:#00d1ff;font-size:20px;font-weight:bold;
+      animation:pulse 1.5s infinite;
+    }
+    .loading img{width:60px;height:60px;margin-bottom:10px;}
+    @keyframes pulse{0%{opacity:.3;}50%{opacity:1;}100%{opacity:.3;}}
+    .controls{margin:15px;display:flex;justify-content:center;gap:15px;}
+    select{padding:8px 12px;border-radius:6px;border:none;background:#222;color:#fff;cursor:pointer;}
+    .footer{margin:20px;}
+    .tg-btn{display:inline-flex;align-items:center;gap:8px;background:#0088cc;color:#fff;
+      padding:10px 18px;border-radius:30px;font-weight:bold;text-decoration:none;}
+    .tg-btn img{width:22px;height:22px;}
+  </style>
+</head>
+<body>
+  <div class="player">
+    <div style="position:relative;">
+      <video id="video" poster="https://i.ibb.co/TM7kG9p4/x.jpg" controls playsinline></video>
+      <div class="loading" id="loading">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
+        apkmodderkings
+      </div>
+    </div>
+    <div class="controls">
+      <label>
+        Language:
+        <select id="langSelect">
+          <option value="en" selected>English</option>
+          <option value="hi">Hindi</option>
+        </select>
+      </label>
+      <label>
+        Quality:
+        <select id="qualitySelect">
+          <option value="1080" selected>1080p</option>
+          <option value="720">720p</option>
+          <option value="360">360p</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://telegram.me/apkmodderkings" target="_blank" class="tg-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg">
+      Join Telegram
+    </a>
+  </div>
+
+  <script>
+    const streams = {
+      en: {
+        "360": "https://tataplay.slivcdn.com/hls/live/2011747-b/TEN1HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_664.m3u8",
+        "720": "https://tataplay.slivcdn.com/hls/live/2011747-b/TEN1HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_1300.m3u8",
+        "1080":"https://tataplay.slivcdn.com/hls/live/2011747-b/TEN1HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_3500.m3u8"
+      },
+      hi: {
+        "360": "https://tataplay.slivcdn.com/hls/live/2020591-b/TEN3HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_664.m3u8",
+        "720": "https://tataplay.slivcdn.com/hls/live/2020591-b/TEN3HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_1300.m3u8",
+        "1080":"https://tataplay.slivcdn.com/hls/live/2020591-b/TEN3HD/hdntl=exp=1757505691~acl=/*~id=81516335-f3df-4265-bf99-e76c7b3acf54~data=hdntl~hmac=59dbbd284ef71a4c4bc8fdd708e96929c8c95e1bebecf2ed44bdf4aeb988cae4/master_3500.m3u8"
+      }
+    };
+
+    const video = document.getElementById("video");
+    const loading = document.getElementById("loading");
+    const langSelect = document.getElementById("langSelect");
+    const qualitySelect = document.getElementById("qualitySelect");
+
+    let currentLang = "en";
+    let currentQuality = "1080";
+
+    function loadStream(lang, quality){
+      const url = streams[lang][quality];
+      loading.style.display = "flex";
+      if(video.canPlayType("application/vnd.apple.mpegurl")){
+        video.src = url;
+      }else if(Hls.isSupported()){
+        if(window._hls){ window._hls.destroy(); }
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, ()=>{loading.style.display="none";});
+        window._hls = hls;
+      }else{
+        video.src = url;
+      }
+      video.oncanplay = ()=>{loading.style.display="none";};
+    }
+
+    function playStream(lang, quality){
+      currentLang = lang;
+      currentQuality = quality;
+      langSelect.value = lang;
+      qualitySelect.value = quality;
+      loadStream(lang, quality);
+    }
+
+    langSelect.addEventListener("change", e=>{
+      currentLang = e.target.value;
+      loadStream(currentLang, currentQuality);
+    });
+    qualitySelect.addEventListener("change", e=>{
+      currentQuality = e.target.value;
+      loadStream(currentLang, currentQuality);
+    });
+
+    loadStream(currentLang, currentQuality);
+  </script>
+</body>
+</html>
